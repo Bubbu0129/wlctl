@@ -1,4 +1,4 @@
-use clap::{Command, arg, crate_version};
+use clap::{Command, arg, crate_version, ArgAction};
 
 pub fn cli() -> Command {
     Command::new("wlctl")
@@ -13,6 +13,12 @@ pub fn cli() -> Command {
                 .required(false)
                 .help("Device mode")
                 .value_parser(["station", "ap"]),
+        )
+        .arg(
+            arg!(--ascii)
+                .required(false)
+                .help("Use plain ASCII labels instead of nerd-font icons")
+                .action(ArgAction::SetTrue),
         )
         .subcommand(
             Command::new("doctor")

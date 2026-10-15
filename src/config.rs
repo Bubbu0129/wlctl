@@ -36,6 +36,10 @@ pub struct Config {
 
     #[serde(default)]
     pub ap: AccessPoint,
+
+    /// When true, render plain ASCII labels instead of nerd-font icons.
+    #[serde(default = "default_ascii")]
+    pub ascii: bool,
 }
 
 fn default_switch_mode() -> char {
@@ -56,6 +60,10 @@ fn default_vpn() -> char {
 
 fn default_refresh_interval_ms() -> u64 {
     1_000
+}
+
+fn default_ascii() -> bool {
+    false
 }
 
 /// Floor for [`Config::refresh_interval`]. A mistyped interval should slow the
@@ -274,6 +282,7 @@ impl Default for Config {
             device: Device::default(),
             station: Station::default(),
             ap: AccessPoint::default(),
+            ascii: default_ascii(),
         }
     }
 }

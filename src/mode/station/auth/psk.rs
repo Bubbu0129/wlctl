@@ -44,7 +44,8 @@ impl Psk {
         self.passphrase.reset();
         Ok(())
     }
-    pub fn render(&self, frame: &mut Frame, network_name: Option<String>) {
+    // Note: accepts ascii flag so render can choose glyphs or words.
+    pub fn render(&self, frame: &mut Frame, network_name: Option<String>, ascii: bool) {
         let popup_layout = Layout::default()
             .direction(Direction::Vertical)
             .constraints([
@@ -128,9 +129,9 @@ impl Psk {
             .block(Block::new().style(Style::default().bg(Color::DarkGray)));
 
         let show_password_icon = if self.show_password {
-            Text::from("󰈈 ").centered()
+            Text::from(if ascii { "Visible" } else { "󰈈 " }).centered()
         } else {
-            Text::from("󰈉 ").centered()
+            Text::from(if ascii { "Hidden" } else { "󰈉 " }).centered()
         };
 
         frame.render_widget(Clear, area);

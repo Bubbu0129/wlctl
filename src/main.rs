@@ -33,7 +33,13 @@ async fn main() -> Result<()> {
 
     rfkill::check()?;
 
-    let (config, config_error) = Config::load();
+    let (mut config, config_error) = Config::load();
+
+    // CLI flags override config file
+    if args.get_flag("ascii") {
+        config.ascii = true;
+    }
+
     let config = Arc::new(config);
 
     let backend = CrosstermBackend::new(io::stdout());
@@ -144,10 +150,7 @@ async fn main() -> Result<()> {
                         if e.to_string()
                             .contains("org.freedesktop.DBus.Error.AccessDenied")
                         {
-                            exit_error_message = Some(anyhow!("
-Insufficient Permissions.
-You do not have the required permissions. Ensure you are part of the appropriate user group or use sudo.
-"));
+                            exit_error_message = Some(anyhow!("\nInsufficient Permissions.\nYou do not have the required permissions. Ensure you are part of the appropriate user group or use sudo.\n"));
                         } else {
                             exit_error_message = Some(e);
                         }

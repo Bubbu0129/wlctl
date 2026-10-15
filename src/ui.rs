@@ -76,7 +76,7 @@ pub fn render(app: &mut App, frame: &mut Frame) {
         }
 
         if app.focused_block == FocusedBlock::HiddenSsidInput {
-            app.auth.hidden.render(frame);
+            app.auth.hidden.render(frame, app.config.ascii);
         }
 
         if app.agent.psk_required.load(Ordering::Relaxed) {
@@ -84,7 +84,7 @@ pub fn render(app: &mut App, frame: &mut Frame) {
 
             app.auth
                 .psk
-                .render(frame, app.network_name_requiring_auth.clone());
+                .render(frame, app.network_name_requiring_auth.clone(), app.config.ascii);
         }
 
         if app
@@ -118,40 +118,4 @@ pub fn render(app: &mut App, frame: &mut Frame) {
             notification.render(index, frame);
         }
     }
-}
-
-/// Draws a small always-on badge in the top-right when one or more VPN tunnels
-/// are active, so the status is visible without opening the modal. The rect is
-/// sized to the label's display width (profile names may contain wide chars).
-fn render_vpn_badge(frame: &mut Frame, active_vpns: &[String]) {
-    let Some(first) = active_vpns.first() else {
-        return;
-    };
-
-    let extra = active_vpns.len().saturating_sub(1);
-    let label = if extra > 0 {
-        format!(" VPN: {first} +{extra} ")
-    } else {
-        format!(" VPN: {first} ")
-    };
-
-    let full = frame.area();
-    let line = Line::from(label);
-    let width = (line.width() as u16).min(full.width);
-    if width == 0 {
-        return;
-    }
-
-    let area = Rect {
-        x: full.width.saturating_sub(width),
-        y: 0,
-        width,
-        height: 1,
-    };
-
-    let badge =
-        Paragraph::new(line).style(Style::default().fg(Color::Green).bg(Color::Black).bold());
-
-    frame.render_widget(Clear, area);
-    frame.render_widget(badge, area);
 }
